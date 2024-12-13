@@ -37,42 +37,17 @@ public class ClienteController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-//    // Obtener clientes con productos (transformado a DTO)
-//    @GetMapping("/con-productos")
-//    public List<ClienteDto> listarClientesConProductos() {
-//        List<Cliente> clientesConProductos = clienteService.listarClientesConProductos();
-//        List<ClienteDto> clientesDto = new ArrayList<>();
-//
-//        // Convertimos la lista de entidades Cliente a DTO
-//        for (Cliente cliente : clientesConProductos) {
-//            ClienteDto clienteDto = new ClienteDto(
-//                    cliente.getCliId(),
-//                    cliente.getCliNombre(),
-//                    cliente.getCliApellido(),
-//                    cliente.getCliCedula()
-//            );
-//            clientesDto.add(clienteDto);
-//        }
-//
-//        return clientesDto;
-//    }
 @GetMapping("/con-productos")
 public List<Cliente> listarClientesConProductos() {
     return clienteService.listarClientesConProductos();
 }
 
-    // Crear un nuevo cliente (retorna ClienteDto)
     @PostMapping
-    public ResponseEntity<ClienteDto> crearCliente(@RequestBody Cliente cliente) {
-        Cliente clienteCreado = clienteService.crearCliente(cliente);
-        ClienteDto clienteDto = new ClienteDto(
-                clienteCreado.getCliId(),
-                clienteCreado.getCliNombre(),
-                clienteCreado.getCliApellido(),
-                clienteCreado.getCliCedula()
-        );
-        return new ResponseEntity<>(clienteDto, HttpStatus.CREATED);
+    public ResponseEntity<ClienteDto> crearCliente(@RequestBody ClienteDto clienteDto) {
+        ClienteDto clienteCreado = clienteService.crearCliente(clienteDto);
+        return new ResponseEntity<>(clienteCreado, HttpStatus.CREATED);
     }
+
 
     // Actualizar cliente existente (retorna ClienteDto)
     @PutMapping("/{id}")

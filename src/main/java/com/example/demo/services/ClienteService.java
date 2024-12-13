@@ -37,9 +37,25 @@ public class ClienteService {
         return clienteRepository.findById(id);
     }
 
-    public Cliente crearCliente(Cliente cliente) {
-        return clienteRepository.save(cliente);
+    public ClienteDto crearCliente(ClienteDto clienteDto) {
+        // Convertir ClienteDto a Cliente
+        Cliente cliente = new Cliente();
+        cliente.setCliNombre(clienteDto.getCliNombre());
+        cliente.setCliApellido(clienteDto.getCliApellido());
+        cliente.setCliCedula(clienteDto.getCliCedula());
+
+        // Guardar en la base de datos
+        Cliente clienteCreado = clienteRepository.save(cliente);
+
+        // Convertir Cliente de vuelta a ClienteDto
+        return new ClienteDto(
+                clienteCreado.getCliId(),
+                clienteCreado.getCliNombre(),
+                clienteCreado.getCliApellido(),
+                clienteCreado.getCliCedula()
+        );
     }
+
 
     public Optional<Cliente> actualizarCliente(Long id, Cliente clienteDetalles) {
         return clienteRepository.findById(id).map(cliente -> {
