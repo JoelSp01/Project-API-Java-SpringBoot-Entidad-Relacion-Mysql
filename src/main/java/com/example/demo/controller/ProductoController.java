@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/productos")
@@ -20,17 +21,35 @@ public class ProductoController {
         return productoService.getAllProductos();
     }
 
-    @PostMapping
-    public Producto createProducto(@RequestBody Producto producto) {
-        return productoService.createProducto(producto);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Producto> updateProducto(@PathVariable Long id, @RequestBody Producto productoDetails) {
-        return productoService.updateProducto(id, productoDetails)
+    @GetMapping("/{id}")
+    public ResponseEntity<Producto> getProductoById(@PathVariable Long id) {
+        return productoService.getProductoById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+
+    @PostMapping("/{cliId}")
+    public ResponseEntity<Producto> createProducto(@RequestBody Producto producto, @PathVariable Long cliId) {
+        try {
+            Producto nuevoProducto = productoService.createProducto(producto, cliId);
+            return ResponseEntity.ok(nuevoProducto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Producto> updateProducto(@PathVariable Long id, @RequestBody Producto productoDetails) {
+            // Usa el Optional para verificar si el producto fue actualizado
+            Optional<Producto> updatedProducto = productoService.updateProducto(id, productoDetails);
+
+            return updatedProducto.map(ResponseEntity::ok) // Si el producto existe, devuelve un 200 con el producto actualizado
+                    .orElse(ResponseEntity.notFound().build()); // Si no existe, devuelve un 404
+
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProducto(@PathVariable Long id) {
